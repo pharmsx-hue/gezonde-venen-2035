@@ -293,28 +293,14 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, query, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase configuratie - VUL HIER JOUW GEGEVENS IN VOOR LIVE MULTIPLAYER MENSEN!
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCmkdGlhINzKhqT1ASzYaU6ZD2O8EtGxdM",
-  authDomain: "hagro-brainstorm.firebaseapp.com",
-  projectId: "hagro-brainstorm",
-  storageBucket: "hagro-brainstorm.firebasestorage.app",
-  messagingSenderId: "274176497519",
-  appId: "1:274176497519:web:2562f86f58e14463c4fa9a",
-  measurementId: "G-X1GXSQXDT5"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        // Firebase configuratie - GEBASEERD OP JOUW EXACTE GEGEVENS UIT JE SCREENSHOT
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmkdG1hINzKhqT1ASzYaU6ZD208EtGxdM",
+            authDomain: "hagro-brainstorm.firebaseapp.com",
+            projectId: "hagro-brainstorm",
+            storageBucket: "hagro-brainstorm.firebasestorage.app",
+            messagingSenderId: "274176497519",
+            appId: "1:274176497519:web:2562f86f58e14463c4fa9a"
         };
 
         // Bepaal of we in demo-modus draaien (bij ontbrekende API key)
@@ -322,8 +308,8 @@ const analytics = getAnalytics(app);
         
         let db = null;
         let auth = null;
-        let currentUser = { uid: 'test_user_id' };
-        let localProfile = { name: 'Demo Deelnemer', practice: 'Gezond Wilnis' };
+        let currentUser = null;
+        let localProfile = { name: 'Deelnemer', practice: 'Gezond Wilnis' };
         let allEntries = [];
 
         // Expose functies aan de global scope
@@ -350,9 +336,11 @@ const analytics = getAnalytics(app);
                 initAuth();
             } catch (e) {
                 console.error("Firebase init crash, fallback naar demo:", e);
+                document.getElementById('db-status').innerHTML = `<span class="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse"></span> Demo Stand (Lokaal)`;
                 // Forceer demo stand bij fouten
                 firebaseConfig.apiKey = "";
-                location.reload();
+                loadLocalProfile();
+                loadDemoEntries();
             }
         }
 
@@ -361,7 +349,7 @@ const analytics = getAnalytics(app);
 
         // Init Auth (Alleen voor LIVE)
         async function initAuth() {
-            if (isDemoMode) return;
+            if (isDemoMode || !auth) return;
             try {
                 await signInAnonymously(auth);
             } catch (error) {
@@ -369,7 +357,7 @@ const analytics = getAnalytics(app);
             }
         }
 
-        if (!isDemoMode) {
+        if (!isDemoMode && auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
@@ -427,7 +415,7 @@ const analytics = getAnalytics(app);
 
         // Live luisteren naar data (LIVE)
         function listenToLiveEntries() {
-            if (isDemoMode || !currentUser) return;
+            if (isDemoMode || !currentUser || !db) return;
             const q = collection(db, ...publicCollectionPath);
             onSnapshot(q, (snapshot) => {
                 allEntries = [];
@@ -468,13 +456,13 @@ const analytics = getAnalytics(app);
 
             if (isDemoMode) {
                 // Sla op in de lokale demo-database
-                const entryId = `${currentUser.uid}_${field}`;
+                const entryId = `demo_user_${field}`;
                 // Verwijder oude invoer van dezelfde categorie & user indien aanwezig
                 allEntries = allEntries.filter(e => e.id !== entryId);
                 
                 allEntries.push({
                     id: entryId,
-                    userId: currentUser.uid,
+                    userId: 'demo_user',
                     author: localProfile.name,
                     practice: localProfile.practice,
                     category: field,
@@ -486,7 +474,7 @@ const analytics = getAnalytics(app);
                 showToast("Inbreng succesvol opgeslagen in Demo Modus!", "success");
             } else {
                 // Echte Firebase database opslag
-                if (!currentUser) return;
+                if (!currentUser || !db) return;
                 const docId = `${currentUser.uid}_${field}`;
                 const docRef = doc(db, ...publicCollectionPath, docId);
 
