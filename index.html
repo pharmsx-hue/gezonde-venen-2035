@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainstorm 2035 - Hagro Vinkeveen Wilnis, De Gezonde Venen</title>
+    <!-- Tailwind CSS voor modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome voor iconen -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-teal-700 to-cyan-800 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-white/10 rounded-xl">
+                    <i class="fa-solid fa-house-medical text-2xl text-teal-200"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black leading-tight tracking-wide uppercase">De Gezonde Venen</h1>
+                    <p class="text-xs text-teal-100 font-medium">Hagro Vinkeveen Wilnis &bull; Visie Huisartsenzorg 2035</p>
+                </div>
+            </div>
+            <!-- Rol Selectie / Status -->
+            <div class="flex items-center gap-2 text-xs bg-black/20 px-4 py-2 rounded-full border border-white/10">
+                <span id="user-display-name" class="font-semibold">Inloggen...</span>
+                <button onclick="toggleRole()" class="text-[10px] uppercase font-bold tracking-wider hover:text-teal-200 ml-2 border-l border-white/20 pl-2">Wijzig</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+        
+        <!-- Linker Navigatie (Stappen van de Visie) -->
+        <aside class="w-full lg:w-1/4 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0">
+            <button onclick="switchTab('tab-setup')" id="btn-tab-setup" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full bg-teal-50 text-teal-800 border-l-4 border-teal-600 font-bold">
+                <i class="fa-solid fa-user-doctor w-5 text-center"></i>
+                <span>1. Jouw Profiel</span>
+            </button>
+            <button onclick="switchTab('tab-trends')" id="btn-tab-trends" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>2. Trends & Zorgen</span>
+            </button>
+            <button onclick="switchTab('tab-wishes')" id="btn-tab-wishes" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-heart w-5 text-center"></i>
+                <span>3. Team & Werkplezier</span>
+            </button>
+            <button onclick="switchTab('tab-horizon')" id="btn-tab-horizon" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-mountain-sun w-5 text-center"></i>
+                <span>4. Onze Stip op 2035</span>
+            </button>
+            <button onclick="switchTab('tab-solutions')" id="btn-tab-solutions" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-gears w-5 text-center"></i>
+                <span>5. Concrete Tools</span>
+            </button>
+            <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-purple-700 hover:bg-purple-50 font-medium border-t lg:border-t-0 lg:mt-4">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Live Beamer Scherm</span>
+            </button>
+        </aside>
+
+        <!-- Rechter Content Area -->
+        <section class="w-full lg:w-3/4 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            
+            <!-- STAP 1: SETUP -->
+            <div id="tab-setup" class="tab-content">
+                <div class="max-w-md mx-auto py-8 text-center">
+                    <div class="w-16 h-16 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 mb-2">Welkom bij de Brainstorm</h2>
+                    <p class="text-slate-500 text-sm mb-6">Wie schuift er vanavond aan namens de Hagro <strong>Vinkeveen Wilnis / De Gezonde Venen</strong>?</p>
+                    
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Jouw Naam</label>
+                            <input type="text" id="input-username" placeholder="Bijv. Dr. de Vries" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Jouw Huisartsenpraktijk</label>
+                            <select id="input-practice" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium text-slate-700">
+                                <option value="" disabled selected>Kies jouw praktijk...</option>
+                                <option value="Gezond Wilnis">Gezond Wilnis</option>
+                                <option value="De Heuvelink">De Heuvelink</option>
+                                <option value="De Beuk">De Beuk</option>
+                            </select>
+                        </div>
+                        <button onclick="saveSetup()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow-sm shadow-teal-100">
+                            Start Brainstorm <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAP 2: TRENDS -->
+            <div id="tab-trends" class="tab-content hidden">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full uppercase">Spiekbriefje 2035</span>
+                    <h2 class="text-xl font-black">1. Wat komt er op ons af in de regio?</h2>
+                </div>
+                <p class="text-slate-500 text-sm mb-6">De landelijke <em>Visie Huisartsenzorg 2035</em> schetst grote maatschappelijke transities (zoals dubbele vergrijzing en verschuiving naar de wijk). Welke trends baren jou het meeste zorgen, of bieden juist kansen voor <strong>Gezond Wilnis, De Heuvelink en De Beuk</strong>?</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Jouw inbreng over Trends & Ontwikkelingen:</label>
+                        <textarea id="text-trends" rows="5" placeholder="Typ hier welke externe ontwikkelingen (bijv. toename zorgvraag, patiëntenstromen in Vinkeveen/Wilnis) jij belangrijk vindt..." class="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"></textarea>
+                    </div>
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
+                        <h4 class="text-xs font-bold text-amber-800 uppercase mb-1"><i class="fa-solid fa-lightbulb"></i> Samen continuïteit bieden</h4>
+                        <p class="text-xs text-amber-700 leading-relaxed">De visie vraagt om hechte wijknetwerken. Hoe kunnen we als 3 praktijken de instroom van kwetsbare ouderen gezamenlijk beter opvangen?</p>
+                    </div>
+                    <button onclick="submitData('trends')" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow-md shadow-teal-50">
+                        Sla deze trends op
+                    </button>
+                </div>
+            </div>
+
+            <!-- STAP 3: EIGEN WENSEN -->
+            <div id="tab-wishes" class="tab-content hidden">
+                <h2 class="text-xl font-black mb-1">2. Jouw Wensen & die van je Medewerkers</h2>
+                <p class="text-slate-500 text-sm mb-6">"Werkplezier staat voorop" is een van de belangrijkste pijlers binnen de Visie 2035. Wat hebben jullie als praktijkhouders zelf, en wat hebben jullie assistentes en POH's nodig om het werk met plezier vol te houden?</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Persoonlijke wensen en behoeften van het team:</label>
+                        <textarea id="text-wishes" rows="5" placeholder="Bijv. lagere administratieve druk voor de assistentes van De Beuk, betere werk-privébalans voor de artsen, of meer gezamenlijke scholing..." class="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"></textarea>
+                    </div>
+                    <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl">
+                        <h4 class="text-xs font-bold text-rose-800 uppercase mb-1"><i class="fa-solid fa-heart-pulse"></i> Focus op werkplezier</h4>
+                        <p class="text-xs text-rose-700 leading-relaxed">Als we de werkdruk niet verlagen, brokkelt de patiëntenzorg af. Wat is op dit moment de grootste energievreter binnen jullie praktijk?</p>
+                    </div>
+                    <button onclick="submitData('wishes')" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+                        Sla deze wensen op
+                    </button>
+                </div>
+            </div>
+
+            <!-- STAP 4: STIP OP DE HORIZON -->
+            <div id="tab-horizon" class="tab-content hidden">
+                <h2 class="text-xl font-black mb-1">3. De Stip op de Horizon (Over 10 jaar, in 2035)</h2>
+                <p class="text-slate-500 text-sm mb-6">Durf groot te dromen voor de regio. Hoe vullen jullie over 10 jaar je eigen beroep in? Hoe ziet de ideale, gezamenlijke toekomst van <strong>Gezond Wilnis, De Heuvelink en De Beuk</strong> eruit?</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Hoe ziet ons gezamenlijke zorgconcept er in 2035 uit?</label>
+                        <textarea id="text-horizon" rows="5" placeholder="Bijv. we behouden drie kleinschalige locaties voor de patiëntenband, maar delen één efficiënte, digitale backoffice. Of we verdelen specifieke chronische zorg..." class="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"></textarea>
+                    </div>
+                    <div class="bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-xl">
+                        <h4 class="text-xs font-bold text-teal-800 uppercase mb-1"><i class="fa-solid fa-mountain"></i> Het Collectief</h4>
+                        <p class="text-xs text-teal-700 leading-relaxed">Doelstelling 6 van de visie daagt uit tot regionaal collectief werken om de individuele praktijk te ontlasten. Wat kunnen we samen doen wat we alleen niet meer redden?</p>
+                    </div>
+                    <button onclick="submitData('horizon')" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+                        Sla de stip op 2035 op
+                    </button>
+                </div>
+            </div>
+
+            <!-- STAP 5: OPLOSSINGEN -->
+            <div id="tab-solutions" class="tab-content hidden">
+                <h2 class="text-xl font-black mb-1">4. Concrete Oplossingen, Processen & Tools</h2>
+                <p class="text-slate-500 text-sm mb-6">Terug naar het heden: hoe gaan we die droom waarmaken? Welke praktische hulpmiddelen, slimme AI-tools, gezamenlijke processen of pilots kunnen we opstarten om hier te komen?</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Welke tools, processen of experimenten moeten we starten?</label>
+                        <textarea id="text-solutions" rows="5" placeholder="Bijv. AI-spraak-naar-tekst voor consultregistratie (halveert administratie), gezamenlijke triage-app of backoffice, of intensiever overleg tussen de 3 praktijken..." class="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"></textarea>
+                    </div>
+                    <button onclick="submitData('solutions')" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+                        Sla oplossingen op
+                    </button>
+                </div>
+            </div>
+
+            <!-- LIVE PRESENTATIE / BEAMER DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs bg-purple-100 text-purple-800 font-bold px-2.5 py-1 rounded-full uppercase mb-1 inline-block">Beamer Dashboard</span>
+                        <h2 class="text-2xl font-black text-slate-900">Live Resultaten: De Gezonde Venen</h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportToClipboard()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-copy"></i> Kopieer voor AI
+                        </button>
+                        <button onclick="clearAllConfirm()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold px-3 py-2.5 rounded-xl transition">
+                            <i class="fa-solid fa-trash-can"></i> Wis data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Status van de Deelnemers -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-amber-800 uppercase">1. Trends & Zorgen</span>
+                            <i class="fa-solid fa-chart-line text-amber-500 text-lg"></i>
+                        </div>
+                        <div id="dashboard-trends" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                            <p class="text-xs text-slate-400 italic">Wachten op invoer...</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-rose-50/50 rounded-xl p-4 border border-rose-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-rose-800 uppercase">2. Team & Werkplezier</span>
+                            <i class="fa-solid fa-heart text-rose-500 text-lg"></i>
+                        </div>
+                        <div id="dashboard-wishes" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                            <p class="text-xs text-slate-400 italic">Wachten op invoer...</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-teal-50/50 rounded-xl p-4 border border-teal-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-teal-800 uppercase">3. Dromen & Horizon 2035</span>
+                            <i class="fa-solid fa-mountain-sun text-teal-500 text-lg"></i>
+                        </div>
+                        <div id="dashboard-horizon" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                            <p class="text-xs text-slate-400 italic">Wachten op invoer...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grote Oplossingen Muur -->
+                <div class="bg-violet-50/40 rounded-xl p-5 border border-violet-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="font-extrabold text-violet-900">4. Concrete Oplossingen & Tools</h3>
+                            <p class="text-xs text-slate-500">Wat gaan we morgen of op middellange termijn oppakken?</p>
+                        </div>
+                        <i class="fa-solid fa-gears text-violet-500 text-2xl"></i>
+                    </div>
+                    <div id="dashboard-solutions" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p class="text-xs text-slate-400 italic col-span-2 text-center py-4">Ingevoerde oplossingen verschijnen hier live.</p>
+                    </div>
+                </div>
+
+                <!-- Custom feedback toast in container -->
+                <div id="toast" class="hidden fixed bottom-6 right-6 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition duration-300">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    <span id="toast-message">Succesvol opgeslagen!</span>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Custom Modals (Vervanging voor alert) -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100">
+            <h4 id="modal-title" class="text-lg font-bold text-slate-900 mb-2">Bevestiging</h4>
+            <p id="modal-body" class="text-sm text-slate-500 mb-6">Weet je zeker dat je alle gegevens wilt resetten?</p>
+            <div class="flex justify-end gap-2 text-sm font-semibold">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">Annuleren</button>
+                <button id="modal-confirm-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition">Resetten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-400 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                Hagro Vinkeveen Wilnis, De Gezonde Venen &bull; Gezond Wilnis &bull; De Heuvelink &bull; De Beuk
+            </div>
+            <div class="font-medium text-teal-600/80">
+                Samen continuïteit bieden richting 2035
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase Script Integratie -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "", // Wordt door runtime ingevuld of blijft leeg voor anonieme opslag
+            authDomain: "huisartsen-brainstorm-2035.firebaseapp.com",
+            projectId: "huisartsen-brainstorm-2035",
+            storageBucket: "huisartsen-brainstorm-2035.appspot.com",
+            messagingSenderId: "384729104",
+            appId: "1:384729104:web:e0000a123"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // De unieke App ID en Firestore pad bepaling (Volgens verplichte RULE 1)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'huisartsen-brainstorm-2035';
+        const publicCollectionPath = ['artifacts', appId, 'public', 'data', 'brainstorm_entries'];
+
+        // Globale states
+        let currentUser = null;
+        let localProfile = { name: 'Onbekende Deelnemer', practice: 'Gezond Wilnis' };
+        let allEntries = [];
+
+        // Expose functies aan de global scope
+        window.switchTab = switchTab;
+        window.saveSetup = saveSetup;
+        window.submitData = submitData;
+        window.toggleRole = toggleRole;
+        window.clearAllConfirm = clearAllConfirm;
+        window.closeModal = closeModal;
+        window.exportToClipboard = exportToClipboard;
+
+        // Init Auth (RULE 3)
+        async function initAuth() {
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Auth error:", error);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadLocalProfile();
+                listenToLiveEntries();
+            } else {
+                initAuth();
+            }
+        });
+
+        // Profiel laden
+        function loadLocalProfile() {
+            const saved = localStorage.getItem('huisartsen_brainstorm_profile');
+            if (saved) {
+                localProfile = JSON.parse(saved);
+                document.getElementById('input-username').value = localProfile.name;
+                document.getElementById('input-practice').value = localProfile.practice;
+                
+                // Vul invoervelden direct in als er al lokaal opgeslagen data is
+                const cachedData = localStorage.getItem('huisartsen_brainstorm_drafts');
+                if (cachedData) {
+                    const drafts = JSON.parse(cachedData);
+                    if (drafts.trends) document.getElementById('text-trends').value = drafts.trends;
+                    if (drafts.wishes) document.getElementById('text-wishes').value = drafts.wishes;
+                    if (drafts.horizon) document.getElementById('text-horizon').value = drafts.horizon;
+                    if (drafts.solutions) document.getElementById('text-solutions').value = drafts.solutions;
+                }
+            } else {
+                // Standaard selectie voor de setup
+                document.getElementById('input-practice').value = "Gezond Wilnis";
+            }
+            updateUserDisplay();
+        }
+
+        function updateUserDisplay() {
+            document.getElementById('user-display-name').innerHTML = 
+                `<i class="fa-solid fa-circle-user mr-1.5 text-teal-300"></i> ${localProfile.name} (${localProfile.practice})`;
+        }
+
+        function saveSetup() {
+            const name = document.getElementById('input-username').value.trim();
+            const practice = document.getElementById('input-practice').value;
+
+            if (!name || !practice) {
+                showToast("Vul a.u.b. je naam in en selecteer je praktijk.", "warning");
+                return;
+            }
+
+            localProfile = { name, practice };
+            localStorage.setItem('huisartsen_brainstorm_profile', JSON.stringify(localProfile));
+            updateUserDisplay();
+            showToast("Profiel opgeslagen! Ga nu door naar de Trends.", "success");
+            switchTab('tab-trends');
+        }
+
+        // Live luisteren naar data (RULE 2 - Sorteer in-memory)
+        function listenToLiveEntries() {
+            if (!currentUser) return;
+
+            const q = collection(db, ...publicCollectionPath);
+            
+            onSnapshot(q, (snapshot) => {
+                allEntries = [];
+                snapshot.forEach((doc) => {
+                    allEntries.push({ id: doc.id, ...doc.data() });
+                });
+                renderDashboard();
+            }, (error) => {
+                console.error("Fout bij ophalen realtime data: ", error);
+            });
+        }
+
+        // Verstuur gegevens naar Firestore
+        async function submitData(field) {
+            if (!currentUser) {
+                showToast("Nog geen actieve verbinding. Probeer het over een moment opnieuw.", "warning");
+                return;
+            }
+
+            const elementId = `text-${field}`;
+            const textContent = document.getElementById(elementId).value.trim();
+
+            if (!textContent) {
+                showToast("Vul eerst je idee of reactie in.", "warning");
+                return;
+            }
+
+            const docId = `${currentUser.uid}_${field}`;
+            const docRef = doc(db, ...publicCollectionPath, docId);
+
+            try {
+                await setDoc(docRef, {
+                    userId: currentUser.uid,
+                    author: localProfile.name,
+                    practice: localProfile.practice,
+                    category: field,
+                    text: textContent,
+                    timestamp: Date.now()
+                });
+
+                // Cache lokaal concept
+                let drafts = JSON.parse(localStorage.getItem('huisartsen_brainstorm_drafts') || '{}');
+                drafts[field] = textContent;
+                localStorage.setItem('huisartsen_brainstorm_drafts', JSON.stringify(drafts));
+
+                showToast("Inbreng succesvol live gedeeld op het presentatiescherm!", "success");
+            } catch (error) {
+                console.error("Fout bij opslaan:", error);
+                showToast("Er ging iets mis met het versturen.", "error");
+            }
+        }
+
+        // Render het beamer dashboard
+        function renderDashboard() {
+            const containerTrends = document.getElementById('dashboard-trends');
+            const containerWishes = document.getElementById('dashboard-wishes');
+            const containerHorizon = document.getElementById('dashboard-horizon');
+            const containerSolutions = document.getElementById('dashboard-solutions');
+
+            // Reset
+            containerTrends.innerHTML = "";
+            containerWishes.innerHTML = "";
+            containerHorizon.innerHTML = "";
+            containerSolutions.innerHTML = "";
+
+            let counts = { trends: 0, wishes: 0, horizon: 0, solutions: 0 };
+
+            // Sorteer op recentste bovenaan
+            allEntries.sort((a, b) => b.timestamp - a.timestamp).forEach(entry => {
+                const cardHtml = `
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-100 shadow-sm text-xs leading-relaxed transition duration-200 hover:border-slate-300">
+                        <p class="text-slate-700 font-semibold mb-2">${escapeHtml(entry.text)}</p>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-50 pt-1.5">
+                            <span class="font-bold text-teal-600">${escapeHtml(entry.author)}</span>
+                            <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-medium">${escapeHtml(entry.practice)}</span>
+                        </div>
+                    </div>
+                `;
+
+                if (entry.category === 'trends') {
+                    containerTrends.insertAdjacentHTML('beforeend', cardHtml);
+                    counts.trends++;
+                } else if (entry.category === 'wishes') {
+                    containerWishes.insertAdjacentHTML('beforeend', cardHtml);
+                    counts.wishes++;
+                } else if (entry.category === 'horizon') {
+                    containerHorizon.insertAdjacentHTML('beforeend', cardHtml);
+                    counts.horizon++;
+                } else if (entry.category === 'solutions') {
+                    const solCard = `
+                        <div class="bg-violet-100/40 p-4 rounded-xl border border-violet-200/50 text-xs">
+                            <p class="font-bold text-slate-800 mb-2">${escapeHtml(entry.text)}</p>
+                            <div class="flex items-center justify-between text-[10px] text-slate-400 border-t border-violet-100 pt-1.5">
+                                <span class="font-bold text-violet-700">${escapeHtml(entry.author)}</span>
+                                <span class="bg-white/70 px-1.5 py-0.5 rounded text-violet-600 font-medium">${escapeHtml(entry.practice)}</span>
+                            </div>
+                        </div>
+                    `;
+                    containerSolutions.insertAdjacentHTML('beforeend', solCard);
+                    counts.solutions++;
+                }
+            });
+
+            // Fallbacks
+            if (counts.trends === 0) containerTrends.innerHTML = `<p class="text-xs text-slate-400 italic">Wachten op de eerste trend-analyses...</p>`;
+            if (counts.wishes === 0) containerWishes.innerHTML = `<p class="text-xs text-slate-400 italic">Wat zijn de hartenkreten van de praktijken?</p>`;
+            if (counts.horizon === 0) containerHorizon.innerHTML = `<p class="text-xs text-slate-400 italic">Wie durft de stip op de horizon te plaatsen?</p>`;
+            if (counts.solutions === 0) containerSolutions.innerHTML = `<p class="text-xs text-slate-400 italic col-span-2 text-center py-6">Praat en denk mee. Oplossingen verschijnen hier direct.</p>`;
+        }
+
+        // Exporteer alle data als een Markdown bestand naar klembord
+        function exportToClipboard() {
+            if (allEntries.length === 0) {
+                showToast("Er is nog geen data ingevoerd om te exporteren.", "warning");
+                return;
+            }
+
+            let md = `# Toekomstvisie 2035 - Hagro Vinkeveen Wilnis / De Gezonde Venen\n`;
+            md += `*Gezamenlijke brainstorm met Gezond Wilnis, De Heuvelink en De Beuk*\n\n`;
+
+            const categories = {
+                trends: '1. Trends, Zorgen & Ontwikkelingen richting 2035',
+                wishes: '2. Wensen van Praktijkhouders & Teams (Zorg- en Werkplezier)',
+                horizon: '3. Onze Stip op de Horizon (Over 10 jaar)',
+                solutions: '4. Concrete Oplossingen, Werkprocessen & Tools'
+            };
+
+            Object.keys(categories).forEach(catKey => {
+                md += `## ${categories[catKey]}\n`;
+                const filtered = allEntries.filter(e => e.category === catKey);
+                if (filtered.length === 0) {
+                    md += `*Geen inbreng geregistreerd voor dit onderdeel.*\n\n`;
+                } else {
+                    filtered.forEach(item => {
+                        md += `### Van: ${item.author} (${item.practice})\n`;
+                        md += `> ${item.text.replace(/\n/g, '\n> ')}\n\n`;
+                    });
+                }
+            });
+
+            const tempTextarea = document.createElement("textarea");
+            tempTextarea.value = md;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Alle resultaten gekopieerd! Plak ze nu in NotebookLM of Gemini.", "success");
+            } catch (err) {
+                console.error("Fout bij kopiëren:", err);
+                showToast("Fout bij kopiëren. Probeer de resultaten handmatig te kopiëren.", "error");
+            }
+            document.body.removeChild(tempTextarea);
+        }
+
+        // Database resetten
+        async function clearAllConfirm() {
+            openModal("Database Resetten", "Weet je zeker dat je alle live brainstormdata van Gezond Wilnis, De Heuvelink en De Beuk wilt verwijderen? Dit kan niet ongedaan worden gemaakt.", async () => {
+                closeModal();
+                try {
+                    const querySnapshot = await getDocs(collection(db, ...publicCollectionPath));
+                    const deletePromises = [];
+                    querySnapshot.forEach((doc) => {
+                        deletePromises.push(deleteDoc(doc.ref));
+                    });
+                    await Promise.all(deletePromises);
+                    showToast("Alle brainstormdata succesvol gewist.", "success");
+                } catch (error) {
+                    console.error("Fout bij leegmaken:", error);
+                    showToast("Er ging iets mis bij het wissen.", "error");
+                }
+            });
+        }
+
+        // Utility: escape html tegen XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Custom Toast Helper
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = message;
+            
+            toast.className = "fixed bottom-6 right-6 text-white text-xs px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition duration-300 z-50 ";
+            if (type === "success") {
+                toast.classList.add("bg-emerald-600");
+            } else if (type === "warning") {
+                toast.classList.add("bg-amber-600");
+            } else {
+                toast.classList.add("bg-rose-600");
+            }
+
+            toast.classList.remove("hidden");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 4000);
+        }
+
+        // Custom Modal Helper
+        function openModal(title, text, confirmCallback) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = text;
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+            
+            // Verwijder oude event listeners door kloon te maken
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            newConfirmBtn.addEventListener('click', confirmCallback);
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        function toggleRole() {
+            switchTab('tab-setup');
+        }
+    </script>
+
+    <!-- UI/Navigatie Logica -->
+    <script>
+        function switchTab(tabId) {
+            // Verberg alle tab contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+
+            // Toon de geselecteerde tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Reset alle button stylings naar inactief
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full text-slate-600 hover:bg-slate-100";
+            });
+
+            // Zet actieve styling op geselecteerde knop
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                if (tabId === 'tab-dashboard') {
+                    activeBtn.className = "tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full bg-purple-50 text-purple-800 border-l-4 border-purple-600 font-bold";
+                } else {
+                    activeBtn.className = "tab-btn flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 text-left whitespace-nowrap lg:whitespace-normal w-auto lg:w-full bg-teal-50 text-teal-800 border-l-4 border-teal-600 font-bold";
+                }
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
