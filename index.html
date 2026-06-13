@@ -35,9 +35,12 @@
                     <p class="text-xs text-teal-100 font-medium">Hagro Vinkeveen Wilnis &bull; Visie Huisartsenzorg 2035</p>
                 </div>
             </div>
-            <!-- Rol Selectie / Status -->
+            <!-- Database Status Indicator -->
             <div class="flex items-center gap-2 text-xs bg-black/20 px-4 py-2 rounded-full border border-white/10">
-                <span id="user-display-name" class="font-semibold">Inloggen...</span>
+                <span id="db-status" class="flex items-center gap-1.5 font-bold">
+                    <span class="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse"></span> Demo Modus
+                </span>
+                <span id="user-display-name" class="font-semibold ml-2 border-l border-white/20 pl-2">Inloggen...</span>
                 <button onclick="toggleRole()" class="text-[10px] uppercase font-bold tracking-wider hover:text-teal-200 ml-2 border-l border-white/20 pl-2">Wijzig</button>
             </div>
         </div>
@@ -290,9 +293,9 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, query, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase configuratie
+        // Firebase configuratie - VUL HIER JOUW GEGEVENS IN VOOR LIVE MULTIPLAYER MENSEN!
         const firebaseConfig = {
-            apiKey: "", // Wordt door runtime ingevuld of blijft leeg voor anonieme opslag
+            apiKey: "", 
             authDomain: "huisartsen-brainstorm-2035.firebaseapp.com",
             projectId: "huisartsen-brainstorm-2035",
             storageBucket: "huisartsen-brainstorm-2035.appspot.com",
@@ -300,17 +303,13 @@
             appId: "1:384729104:web:e0000a123"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Bepaal of we in demo-modus draaien (bij ontbrekende API key)
+        const isDemoMode = !firebaseConfig.apiKey;
         
-        // De unieke App ID en Firestore pad bepaling (Volgens verplichte RULE 1)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'huisartsen-brainstorm-2035';
-        const publicCollectionPath = ['artifacts', appId, 'public', 'data', 'brainstorm_entries'];
-
-        // Globale states
-        let currentUser = null;
-        let localProfile = { name: 'Onbekende Deelnemer', practice: 'Gezond Wilnis' };
+        let db = null;
+        let auth = null;
+        let currentUser = { uid: 'test_user_id' };
+        let localProfile = { name: 'Demo Deelnemer', practice: 'Gezond Wilnis' };
         let allEntries = [];
 
         // Expose functies aan de global scope
@@ -322,8 +321,33 @@
         window.closeModal = closeModal;
         window.exportToClipboard = exportToClipboard;
 
-        // Init Auth (RULE 3)
+        // Start de app op
+        if (isDemoMode) {
+            console.warn("Geen Firebase API Key ingevuld. App start in veilige offline Demo-Modus.");
+            document.getElementById('db-status').innerHTML = `<span class="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse"></span> Demo Stand (Lokaal)`;
+            loadLocalProfile();
+            loadDemoEntries();
+        } else {
+            document.getElementById('db-status').innerHTML = `<span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> Live Verbonden`;
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                initAuth();
+            } catch (e) {
+                console.error("Firebase init crash, fallback naar demo:", e);
+                // Forceer demo stand bij fouten
+                firebaseConfig.apiKey = "";
+                location.reload();
+            }
+        }
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'huisartsen-brainstorm-2035';
+        const publicCollectionPath = ['artifacts', appId, 'public', 'data', 'brainstorm_entries'];
+
+        // Init Auth (Alleen voor LIVE)
         async function initAuth() {
+            if (isDemoMode) return;
             try {
                 await signInAnonymously(auth);
             } catch (error) {
@@ -331,15 +355,17 @@
             }
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                loadLocalProfile();
-                listenToLiveEntries();
-            } else {
-                initAuth();
-            }
-        });
+        if (!isDemoMode) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadLocalProfile();
+                    listenToLiveEntries();
+                } else {
+                    initAuth();
+                }
+            });
+        }
 
         // Profiel laden
         function loadLocalProfile() {
@@ -359,7 +385,6 @@
                     if (drafts.solutions) document.getElementById('text-solutions').value = drafts.solutions;
                 }
             } else {
-                // Standaard selectie voor de setup
                 document.getElementById('input-practice').value = "Gezond Wilnis";
             }
             updateUserDisplay();
@@ -386,12 +411,10 @@
             switchTab('tab-trends');
         }
 
-        // Live luisteren naar data (RULE 2 - Sorteer in-memory)
+        // Live luisteren naar data (LIVE)
         function listenToLiveEntries() {
-            if (!currentUser) return;
-
+            if (isDemoMode || !currentUser) return;
             const q = collection(db, ...publicCollectionPath);
-            
             onSnapshot(q, (snapshot) => {
                 allEntries = [];
                 snapshot.forEach((doc) => {
@@ -403,13 +426,19 @@
             });
         }
 
-        // Verstuur gegevens naar Firestore
-        async function submitData(field) {
-            if (!currentUser) {
-                showToast("Nog geen actieve verbinding. Probeer het over een moment opnieuw.", "warning");
-                return;
+        // Demo data laden uit localStorage (DEMO)
+        function loadDemoEntries() {
+            const saved = localStorage.getItem('huisartsen_brainstorm_demo_db');
+            if (saved) {
+                allEntries = JSON.parse(saved);
+            } else {
+                allEntries = [];
             }
+            renderDashboard();
+        }
 
+        // Verstuur/sla gegevens op
+        async function submitData(field) {
             const elementId = `text-${field}`;
             const textContent = document.getElementById(elementId).value.trim();
 
@@ -418,11 +447,19 @@
                 return;
             }
 
-            const docId = `${currentUser.uid}_${field}`;
-            const docRef = doc(db, ...publicCollectionPath, docId);
+            // Opslaan in drafts lokaal
+            let drafts = JSON.parse(localStorage.getItem('huisartsen_brainstorm_drafts') || '{}');
+            drafts[field] = textContent;
+            localStorage.setItem('huisartsen_brainstorm_drafts', JSON.stringify(drafts));
 
-            try {
-                await setDoc(docRef, {
+            if (isDemoMode) {
+                // Sla op in de lokale demo-database
+                const entryId = `${currentUser.uid}_${field}`;
+                // Verwijder oude invoer van dezelfde categorie & user indien aanwezig
+                allEntries = allEntries.filter(e => e.id !== entryId);
+                
+                allEntries.push({
+                    id: entryId,
                     userId: currentUser.uid,
                     author: localProfile.name,
                     practice: localProfile.practice,
@@ -430,16 +467,29 @@
                     text: textContent,
                     timestamp: Date.now()
                 });
+                localStorage.setItem('huisartsen_brainstorm_demo_db', JSON.stringify(allEntries));
+                renderDashboard();
+                showToast("Inbreng succesvol opgeslagen in Demo Modus!", "success");
+            } else {
+                // Echte Firebase database opslag
+                if (!currentUser) return;
+                const docId = `${currentUser.uid}_${field}`;
+                const docRef = doc(db, ...publicCollectionPath, docId);
 
-                // Cache lokaal concept
-                let drafts = JSON.parse(localStorage.getItem('huisartsen_brainstorm_drafts') || '{}');
-                drafts[field] = textContent;
-                localStorage.setItem('huisartsen_brainstorm_drafts', JSON.stringify(drafts));
-
-                showToast("Inbreng succesvol live gedeeld op het presentatiescherm!", "success");
-            } catch (error) {
-                console.error("Fout bij opslaan:", error);
-                showToast("Er ging iets mis met het versturen.", "error");
+                try {
+                    await setDoc(docRef, {
+                        userId: currentUser.uid,
+                        author: localProfile.name,
+                        practice: localProfile.practice,
+                        category: field,
+                        text: textContent,
+                        timestamp: Date.now()
+                    });
+                    showToast("Inbreng succesvol live gedeeld op het presentatiescherm!", "success");
+                } catch (error) {
+                    console.error("Fout bij opslaan:", error);
+                    showToast("Er ging iets mis met het versturen.", "error");
+                }
             }
         }
 
@@ -498,7 +548,7 @@
             if (counts.trends === 0) containerTrends.innerHTML = `<p class="text-xs text-slate-400 italic">Wachten op de eerste trend-analyses...</p>`;
             if (counts.wishes === 0) containerWishes.innerHTML = `<p class="text-xs text-slate-400 italic">Wat zijn de hartenkreten van de praktijken?</p>`;
             if (counts.horizon === 0) containerHorizon.innerHTML = `<p class="text-xs text-slate-400 italic">Wie durft de stip op de horizon te plaatsen?</p>`;
-            if (counts.solutions === 0) containerSolutions.innerHTML = `<p class="text-xs text-slate-400 italic col-span-2 text-center py-6">Praat en denk mee. Oplossingen verschijnen hier direct.</p>`;
+            if (counts.solutions === 0) containerSolutions.innerHTML = `<p class="text-xs text-slate-400 italic col-span-2 text-center py-4">Ingevoerde oplossingen verschijnen hier live.</p>`;
         }
 
         // Exporteer alle data als een Markdown bestand naar klembord
@@ -549,17 +599,24 @@
         async function clearAllConfirm() {
             openModal("Database Resetten", "Weet je zeker dat je alle live brainstormdata van Gezond Wilnis, De Heuvelink en De Beuk wilt verwijderen? Dit kan niet ongedaan worden gemaakt.", async () => {
                 closeModal();
-                try {
-                    const querySnapshot = await getDocs(collection(db, ...publicCollectionPath));
-                    const deletePromises = [];
-                    querySnapshot.forEach((doc) => {
-                        deletePromises.push(deleteDoc(doc.ref));
-                    });
-                    await Promise.all(deletePromises);
-                    showToast("Alle brainstormdata succesvol gewist.", "success");
-                } catch (error) {
-                    console.error("Fout bij leegmaken:", error);
-                    showToast("Er ging iets mis bij het wissen.", "error");
+                if (isDemoMode) {
+                    allEntries = [];
+                    localStorage.removeItem('huisartsen_brainstorm_demo_db');
+                    renderDashboard();
+                    showToast("Alle lokale demo-data succesvol gewist.", "success");
+                } else {
+                    try {
+                        const querySnapshot = await getDocs(collection(db, ...publicCollectionPath));
+                        const deletePromises = [];
+                        querySnapshot.forEach((doc) => {
+                            deletePromises.push(deleteDoc(doc.ref));
+                        });
+                        await Promise.all(deletePromises);
+                        showToast("Alle brainstormdata succesvol gewist uit Firebase.", "success");
+                    } catch (error) {
+                        console.error("Fout bij leegmaken:", error);
+                        showToast("Er ging iets mis bij het wissen.", "error");
+                    }
                 }
             });
         }
